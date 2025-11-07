@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcessoTrip - Turismo Acessível</title>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <nav class="main-nav">
+            <button class="nav-btn" data-target="tela-inicial" aria-label="Tela Inicial">
+                <span class="icon" aria-hidden="true">🏠</span>
+                <span>Início</span>
+            </button>
+            <button class="nav-btn" data-target="tela-comunidade" aria-label="Comunidade">
+                <span class="icon" aria-hidden="true">🤝</span>
+                <span>Comunidade</span>
+            </button>
+            <button class="nav-btn" data-target="tela-perfil" aria-label="Meu Perfil">
+                <span class="icon" aria-hidden="true">👤</span>
+                <span>Perfil</span>
+            </button>
+        </nav>
+
+        <main class="screen" id="tela-inicial" aria-hidden="false">
+            <header>
+                <h1>AcessoTrip</h1>
+                <p class="tagline">Turismo Acessível para Todos</p>
+            </header>
+            
+            <section class="search-container">
+                <input type="search" id="search-bar" placeholder="Onde você quer ir hoje?" aria-label="Pesquisar destino ou local">
+                <button id="speech-btn" aria-label="Busca por voz"><span class="icon" aria-hidden="true">🎤</span></button>
+                <button id="search-btn" aria-label="Buscar"><span class="icon" aria-hidden="true">🔍</span></button>
+            </section>
+            
+            <section class="filters-container">
+                <h3>Minhas Necessidades:</h3>
+                <div class="filter-buttons">
+                    <button class="filter-btn" data-filter="fisica" aria-label="Filtro de Acessibilidade Física"><span aria-hidden="true">♿️</span> Física</button>
+                    <button class="filter-btn" data-filter="visual" aria-label="Filtro de Acessibilidade Visual"><span aria-hidden="true">👁️</span> Visual</button>
+                    <button class="filter-btn" data-filter="auditiva" aria-label="Filtro de Acessibilidade Auditiva"><span aria-hidden="true">👂</span> Auditiva</button>
+                    <button class="filter-btn" data-filter="cognitiva" aria-label="Filtro de Acessibilidade Cognitiva"><span aria-hidden="true">🧠</span> Cognitiva</button>
+                </div>
+            </section>
+
+            <section class="other-needs-container">
+                <h3>Outras Necessidades (Inclusão):</h3>
+                <div class="other-filter-buttons">
+                    <button class="filter-btn-other" data-filter="vegano" aria-label="Filtro para locais veganos"><span aria-hidden="true">🌱</span> Vegano</button>
+                    <button class="filter-btn-other" data-filter="glutenFree" aria-label="Filtro para locais sem glúten"><span aria-hidden="true">🍞</span> Sem Glúten</button>
+                    <button class="filter-btn-other" data-filter="lgbtFriendly" aria-label="Filtro para locais amigáveis à comunidade LGBTQ+"><span aria-hidden="true">🌈</span> LGBTQ+ Friendly</button>
+                </div>
+            </section>
+
+            <section class="quick-nav">
+                <h3>Explorar Categorias:</h3>
+                <div class="category-buttons">
+                    <button class="category-btn" data-categoria="hotel"><span aria-hidden="true">🏨</span> Hotéis</button>
+                    <button class="category-btn" data-categoria="restaurante"><span aria-hidden="true">🍽️</span> Restaurantes</button>
+                    <button class="category-btn" data-categoria="transporte"><span aria-hidden="true">🚌</span> Transporte</button>
+                    <button class="category-btn" data-categoria="turismo"><span aria-hidden="true">🏛️</span> Atrações</button>
+                </div>
+            </section>
+        </main>
+
+        <main class="screen" id="tela-resultados" aria-hidden="true">
+            <header>
+                <button class="back-btn" data-target="tela-inicial" aria-label="Voltar para a tela inicial"><span aria-hidden="true">←</span> Voltar</button>
+                <h2 id="resultados-titulo">Resultados</h2>
+            </header>
+            
+            <div class="view-toggle">
+                <button id="btn-mapa" class="toggle-active" aria-label="Visualizar no mapa">Mapa</button>
+                <button id="btn-lista" aria-label="Visualizar em lista">Lista</button>
+            </div>
+
+            <div class="desktop-results-container">
+                
+                <div id="list-view-wrapper">
+                    <div id="list-view" class="hidden">
+                        <ul id="list-view-container" aria-live="polite">
+                            </ul>
+                    </div>
+                    <div class="loading-overlay hidden" id="resultados-loading" aria-live="polite">
+                        <div class="spinner"></div>
+                        <p>Buscando locais acessíveis...</p>
+                    </div>
+                </div>
+
+                <div id="map-view">
+                    <div id="mapbox-map" style="width: 100%; height: 300px;"></div>
+                    <div class="legend">
+                        <span><span class="pin green"></span> Totalmente</span>
+                        <span><span class="pin yellow"></span> Parcialmente</span>
+                        <span><span class="pin red"></span> Não Acessível</span>
+                    </div>
+                </div>
+            </div>
+            </main>
+
+        <main class="screen" id="tela-local" aria-hidden="true">
+            <header>
+                <button class="back-btn" data-target="tela-resultados" aria-label="Voltar para resultados"><span aria-hidden="true">←</span> Voltar</button>
+                <h2 id="local-nome">Detalhes do Local</h2>
+            </header>
+            
+            <div class="photo-gallery" id="local-fotos">
+                </div>
+
+            <div class="rating-overall" id="local-rating-overall">
+                </div>
+            
+            <div class="inclusion-tags" id="local-inclusion-tags">
+                </div>
+
+            <div class="accessibility-tabs">
+                <button class="tab-btn active" data-tab="tab-fisica" aria-controls="tab-fisica"><span aria-hidden="true">♿️</span> Física</button>
+                <button class="tab-btn" data-tab="tab-auditiva" aria-controls="tab-auditiva"><span aria-hidden="true">👂</span> Auditiva</button>
+                <button class="tab-btn" data-tab="tab-visual" aria-controls="tab-visual"><span aria-hidden="true">👁️</span> Visual</button>
+                <button class="tab-btn" data-tab="tab-cognitiva" aria-controls="tab-cognitiva"><span aria-hidden="true">🧠</span> Cognitiva</button>
+            </div>
+
+            <div id="tab-fisica" class="tab-content" role="tabpanel"></div>
+            <div id="tab-auditiva" class="tab-content hidden" role="tabpanel"></div>
+            <div id="tab-visual" class="tab-content hidden" role="tabpanel"></div>
+            <div id="tab-cognitiva" class="tab-content hidden" role="tabpanel"></div>
+
+            <button id="confirm-access-btn" data-local-id="" aria-label="Confirmar acessibilidade deste local"><span aria-hidden="true">👍</span> Eu estive aqui e confirmo a acessibilidade!</button>
+            
+            <section class="avaliar-local">
+                <h3>Sua Avaliação:</h3>
+                
+                <fieldset class="star-rating-fieldset" id="star-rating-input">
+                    <legend class="visually-hidden">Avalie este local com 5 estrelas</legend>
+                    <input type="radio" id="star5" name="rating" value="5" class="visually-hidden">
+                    <label for="star5" title="5 estrelas">★</label>
+                    <input type="radio" id="star4" name="rating" value="4" class="visually-hidden">
+                    <label for="star4" title="4 estrelas">★</label>
+                    <input type="radio" id="star3" name="rating" value="3" class="visually-hidden">
+                    <label for="star3" title="3 estrelas">★</label>
+                    <input type="radio" id="star2" name="rating" value="2" class="visually-hidden">
+                    <label for="star2" title="2 estrelas">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" class="visually-hidden">
+                    <label for="star1" title="1 estrela">★</label>
+                </fieldset>
+                
+                <textarea id="nova-avaliacao-texto" placeholder="Compartilhe sua experiência detalhada..." aria-label="Campo para digitar sua avaliação"></textarea>
+                <button id="submit-avaliacao-btn" aria-label="Enviar sua avaliação">Enviar Avaliação</button>
+            </section>
+        </main>
+
+        <main class="screen" id="tela-comunidade" aria-hidden="true">
+            <header>
+                <h2>Comunidade</h2>
+            </header>
+            <div class="novo-post-container">
+                <button id="btn-novo-post" class="category-btn" aria-expanded="false" aria-controls="form-novo-post"><span aria-hidden="true">➕</span> Criar novo post</button>
+                <form id="form-novo-post" class="hidden">
+                    <textarea id="novo-post-texto" placeholder="Compartilhe sua experiência..." required aria-label="Conteúdo do seu novo post"></textarea>
+                    <input type="text" id="novo-post-tags" placeholder="Tags (ex: #gramado, #vegano)" aria-label="Tags para seu post">
+                    <button type="submit" aria-label="Publicar post">Publicar</button>
+                </form>
+            </div>
+            <div id="community-feed" aria-live="polite">
+                </div>
+            <div class="loading-overlay hidden" id="comunidade-loading" aria-live="polite">
+                <div class="spinner"></div>
+                <p>Carregando posts...</p>
+            </div>
+        </main>
+
+        <main class="screen" id="tela-perfil" aria-hidden="true">
+            <header>
+                <h2>Meu Perfil</h2>
+            </header>
+            <section class="profile-settings">
+                <h3>Minhas Preferências de Acessibilidade</h3>
+                <div class="setting-item">
+                    <label for="pref-fisica">Priorizar acessibilidade física</label>
+                    <input type="checkbox" id="pref-fisica" class="toggle-switch" data-pref="fisica" aria-label="Priorizar acessibilidade física">
+                </div>
+                <div class="setting-item">
+                    <label for="pref-visual">Priorizar acessibilidade visual</label>
+                    <input type="checkbox" id="pref-visual" class="toggle-switch" data-pref="visual" aria-label="Priorizar acessibilidade visual">
+                </div>
+                <div class="setting-item">
+                    <label for="pref-auditiva">Priorizar acessibilidade auditiva</label>
+                    <input type="checkbox" id="pref-auditiva" class="toggle-switch" data-pref="auditiva" aria-label="Priorizar acessibilidade auditiva">
+                </div>
+                <div class="setting-item">
+                    <label for="pref-cognitiva">Priorizar acessibilidade cognitiva</label>
+                    <input type="checkbox" id="pref-cognitiva" class="toggle-switch" data-pref="cognitiva" aria-label="Priorizar acessibilidade cognitiva">
+                </div>
+            </section>
+            
+            <section class="saved-routes">
+                <h3>Meus Roteiros Salvos</h3>
+                <ul id="saved-routes-list">
+                    <li>Roteiro: Fim de Semana em Gramado</li>
+                    <li>Roteiro: Museus do Rio de Janeiro</li>
+                </ul>
+            </section>
+
+            <section class="gamification">
+                <h3>Minhas Conquistas</h3>
+                <p>🏆 Viajante Colaborativo (<span id="conquista-avaliacoes">0</span> locais avaliados)</p>
+                <p>🎖️ Explorador Acessível (<span id="conquista-roteiros">0</span> roteiros criados)</p>
+            </section>
+        </main>
+
+        <button id="fab-assistente" aria-label="Abrir assistente de acessibilidade"><span aria-hidden="true">🤖</span></button>
+
+        <div id="modal-assistente" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+            <div class="modal-content">
+                <button id="close-modal" class="close-btn" aria-label="Fechar modal">&times;</button>
+                <h3 id="modal-title">Assistente de Acessibilidade</h3>
+                <div class="setting-item">
+                    <label for="toggle-contraste">Alto Contraste</label>
+                    <input type="checkbox" id="toggle-contraste" class="toggle-switch" aria-label="Ativar ou desativar alto contraste">
+                </div>
+                <div class="setting-item">
+                    <label for="toggle-fonte">Aumentar Fonte</label>
+                    <input type="checkbox" id="toggle-fonte" class="toggle-switch" aria-label="Ativar ou desativar fonte ampliada">
+                </div>
+                <div class="setting-item">
+                    <label for="toggle-leitura">Modo Leitura Simplificada</label>
+                    <input type="checkbox" id="toggle-leitura" class="toggle-switch" aria-label="Ativar ou desativar modo de leitura simplificada">
+                </div>
+                <div class="setting-item">
+                    <label for="toggle-voz">Ativar Modo Voz (Simulação)</label>
+                    <input type="checkbox" id="toggle-voz" class="toggle-switch" aria-label="Ativar ou desativar modo voz">
+                </div>
+            </div>
+        </div>
+
+    </div> 
+    <script src="js/scripts.js"></script>
+</body>
+</html>
